@@ -1,0 +1,48 @@
+ADD INSTRUCTION
+
+Although the extension has been installed, it has no instruction.
+Introduce a background script by creating a file titled background.js
+and placing it inside the extension directory.
+
+Background scrips, and many other important components, must be registered in the manifest.
+Registering a background script in the manifest tells the extension which file to reference,
+and how that file shoukd be behave
+{
+  "name": "Getting Started",
+  "description": "Build an Extension",
+  "version": "1.0",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "manifest_version": 2
+}
+
+The extension is now aware that it is includes a non-persistent background script
+and will scan the registered file for important events it needs to listen for.
+
+This extension will need for information from a persistent variable as soon as its installed.
+Start by including a listening event for runtime.onInstalled in the background script.
+Inside onInstalled listener, the extension will set a value using the storage API.
+This will allow multiple extension components to access that value and update it
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.sync.set({color: '#3aa757'}, function() {
+    console.log("The color is green");
+  });
+});
+
+Most API, including the storage API,
+must be registered under the "permissions" field in the manifest for the extension to use them
+
+{
+  "name": "Getting Started Example",
+  "version": "1.0",
+  "description": "Build an Extension",
+  "permissions": ["storage"],
+  "background" {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "manifest_version": 2
+}
