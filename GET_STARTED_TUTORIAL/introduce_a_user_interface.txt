@@ -1,0 +1,145 @@
+INTRODUCE A USER INTERFACE
+
+Extensions can have many forms of a user interface, but this one will use a pop-up.
+Create and add a file titled popup.html to the directory.
+This extension uses a button to change the background color.
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      button {
+        height: 30px;
+        width: 30px;
+        outline: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button id="changeColor"></button>
+  </body>
+</html>
+
+Like the background script, this file needs to be designated as a popup in the manifest under "page_action"
+{
+  "name": "Getting Started",
+  "version": "1.0",
+  "description": "Build an Extension",
+  "permissions": ["storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 2
+}
+
+Designation for tollbar icons is also included under "page_action" in the "default_icons" field.
+Update the manifest so the extension knows how to use the images.
+{
+  "name": "Getting Started",
+  "version": "1.0",
+  "description": "Build an Extension",
+  "permissions": ["storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "dfault_icons": {
+      "16": "images/get_started_16.png",
+      "32": "images/get_started_32.png",
+      "48": "images/get_started_48.png",
+      "128": "images/get_started_128.png"
+    }
+  }
+}
+
+Extensions also display images on the extension management page,
+the permissions warning and favicon.
+These images are designated in the manifest under "icons"
+{
+  "name": "Getting Started",
+  "version": "1.0",
+  "description": "Build an Extension",
+  "permission": ["storage"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/get_started_16.png",
+      "32": "images/get_started_32.png",
+      "48": "images/get_started_48.png",
+      "128": "images/get_started_128.png"
+    }
+  },
+  "icons": {
+    "16": "images/get_started_16.png",
+    "32": "images/get_started_32.png",
+    "48": "images/get_started_48.png",
+    "128": "images/get_started_128.png"
+  }
+}
+
+If the extension is reload at this stage, it will include a grey-scale icon,
+but will not contain any functionality differents.
+Because "page_action" is declared in the manifest, 
+it is up to the extension to tell the browser when the user can interact with popup.html
+
+Add declared rules to the background script with the declarativeContent API
+within the runtime.onInstalled lisener event
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.syn.set({color: '#3aa757'}, function() {
+    console.log('The color is green');
+  });
+
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+    chrome.declarativeContent.onPageChanged.addRules([{
+      conditions: [new chrome.declarativeContent.PageStateMatcher({
+        pageUrl: {hostEquals: 'developer.chrome.com'},
+      })],
+      actions: [new chrome.declarativeContent.ShowPageAction()]
+    }]);
+  });
+});
+
+The extension will need permission to access the declarativeContent API in its manifest.
+{
+  name: "Getting Started",
+  ...
+  permissions: ["storage", "declarativeContent"].
+  ...
+}
+
+The browser will now shows a full-color page action icon in the browser toolbar
+when users  navigated to a URL that container "developer.chrome.com".
+When the icon is full-color, user can click it to view popup.html
+
+The last step for the popup UI is adding color to the button.
+Create and add a file popup.js with the following code to the extension directory
+let changeColor = document.getElementById('changeColor');
+
+chrome.storage.sync.get('color', function(data) {
+  changeColor.style.backgroundColor = data.color;
+  changeColor.setAttribute('value', data.color);
+});
+
+This code graps the button from popup.html and requests the color value from storage,
+It then applies the color as the background of the button.
+Include a script tag to popup.js in popup.html
+<!DOCTYPE html>
+<html>
+  ...
+  <body>
+    <button id="changeColor"><button>
+    <script src="popup.js"></script>
+  </body>
+</html>
+
+Reload the extension to view the green button.
