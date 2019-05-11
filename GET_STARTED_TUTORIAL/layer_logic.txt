@@ -1,0 +1,35 @@
+LAYER LOGIC
+
+The extension now knows the popup should be available to ussers in developer.chrome.com
+and display a colored button, but needs logic for futher user interaction.
+Update popup.js to include the folllwing code.
+let changeColod = document.getElementById('changeColor');
+...
+changeColor.onclick = function(element) {
+  let color = element.target.value;
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.executeScript(
+      tabs[0].id,
+      {code: 'document.body.style.backgroundColor = "' + color + '";'}
+    );
+  });
+};
+
+The updated code adds on onclick event the button,
+which triggers a programatically injected content script.
+This turns the background color of the page the same color as the button.
+Using programmatic injection allows for user-invoked content scripts,
+instead of auto inserting unwanted code into web pages.
+
+The manifest will need the activeTab permission to allow the extension temporary access the tabs API.
+This enable the extension to call tabs.executeScript
+{
+  "name": "Getting Started Example",
+  ...
+  "permissions": ["activeTab", "declarativeContent", "storage"],
+  ...
+}
+
+This extension is now fully functional. Reload the extension, refresh this page,
+open the popup anh click the button to turn it green!
+However, some user may want to change the background to a different color.
