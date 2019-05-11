@@ -1,0 +1,20 @@
+CREATE THE MANIFEST
+
+Extensions start with their manifest.
+Create a file called manifest.json and include the followiing code.
+{
+  "name": "Getting Started",
+  "description": "Build an extension",
+  "version": "1.0",
+  "manifest_version": 2
+}
+
+The directory holding the manifest file can be added as an extension in developer mode in its current state.
+1. Open the Extension Management page by navigating to chrome://extensions.
+  - The Extension Management page can also be open ed by clicking on the Chrome menu,
+  hovering over More Tools then selecting Extensions.
+2. Enable Developer Mode by clicking the toggle switch next to Developer mode.
+3. Click the LOADED UNPACKED button and select the extension directory.
+
+Ta-da! The extension has been successully installed.
+Because no icons were included in the manifest, a generic tollbar icon will be created for the extension.
