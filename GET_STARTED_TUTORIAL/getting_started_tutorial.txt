@@ -1,0 +1,17 @@
+GETTING STARTED TUTORIAL
+
+Extension are made of different, but cohesive components.
+Components can include 
+- background scripts
+- content scripts
+- options page
+- UI elements
+and various logic files.
+Extension components are craeted with web development technologies: HTML, CSS and JavaScript.
+An extension's components will depend on its functionality and may not require every option.
+
+This tutotial will build and extension
+that allows the user to change the background color of any page on developer.chome.come.
+It will use many core components to give an introductory demonstration of their relationships.
+
+To start, create a new directory to hold extension's file.
