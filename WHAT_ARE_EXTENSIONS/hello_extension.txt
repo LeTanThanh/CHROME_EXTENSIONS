@@ -1,0 +1,56 @@
+HELLO EXTENSION
+
+Take a small step into extensions with this quick Hello Extensions example.
+Start by creating a new directory to store extension's files, or download them from the sample page.
+
+Next, add a file called manifest.json and include the following code
+{
+  "name": "Hello Extension",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "manifest_version": 2
+}
+
+Every extension requires a manifest, through most extensions will not do much with just the manifest.
+For this quick start, the extension hash a popup file and icon declared under the browser_action field:
+{
+  "name": "Hello Extension",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_popup": "hello_extension.html",
+    "default_icon": "hello_extension.png"
+  }
+}
+
+Download "hello_extension.png"
+Download "hello_extension.html"
+<html>
+  <body>
+    <h1>Hello Extension</h1>
+  </body>
+</html>
+
+The extension now display "hello_extension.html" when the icon is clicked.
+The next step is to include a command in manifest.json that enables a keyboard shortcut.
+This strp is fun, but not mecessary
+{
+  "name": "Hello Extension",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_popup": "hello_extension.html",
+    "default_icon": "hello_extension.png"
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      },
+      "description": "Opens hello_extension.html"
+    }
+  }
+}
