@@ -1,0 +1,63 @@
+GIVE USER OPTIONS
+
+The extension currntly only allows user to change the background to green.
+Including an options page gives users more control over the extension's functionally,
+futher customizing their browsing experience.
+
+Start by creating a file in the directory called "options.html" and include the following code
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      button {
+        height: 30px;
+        width: 30px;
+        outline: none;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="buttonDiv">
+    </div>
+
+    <div>
+      <p>Choose a different background color!</p>
+    </div>
+  </body>
+
+  <script src="option.js"></script>
+</html>
+
+The register the "options_page" in the manifest
+{
+  "name": "Getting Started",
+  ...
+  "options_page": "option.html",
+  ...
+  "manifest_version": 2
+}
+
+Reload the extension and click DETAILS.
+Scroll down the details page and select Extension options to view the options page,
+although it will currently appear blank.
+
+Last step is to add options logic. Create a file called options.js in the extension directory with the following code
+let page = document.getElementById('buttonDiv');
+const kButtonColors = ['#3aa757', '#e8453c', '#f9bb2d', '#4688f1'];
+
+function constructOptions(kButtonColors) {
+  for (let item in kButtonColors) {
+    let button = document.createElement('button');
+    button.style.backgroundColor = item;
+    button.addEventListener('click', function() {
+      chrome.storage,sync.set({color: item}, function() {
+        console.log('color is ' + item);
+      });
+    });
+
+    page.appendChild(button);
+  }
+}
+
+constructOptions(kButtonColors);
