@@ -1,0 +1,42 @@
+ARCHITECTURE
+
+An extension's architecture will depend on its functionality, but many robust extension will multiple components
+- Manifest
+- Background Script
+- UI Elements
+- Content Script
+- Options Page
+
+BACKGROUND SCRIPT
+
+The background script is the extension's event handler.
+It contains listeners for browser events that are important to the extension.
+It lies dormant until an event is fired then oerforms the instructed logic.
+An effective background script is only loaded when itsis need and unloaded when it goes idle.
+
+UI ELEMENTS
+
+An extension's user interface should be porposeful and minimal.
+The UI should customize or enhance the browsing experience without distracting from it.
+Most extension have a browser action or page action
+but can container other forms of UI, such as context menus, use of the omnibox, or creation of keyboard shortcut
+
+Extension UI pages, such as popup, can contain ordinary HTML pages with Javascript logic.
+Extensions can also call tabs.create or window.open() to display addtional HTML files present in the extension.
+
+AN extension using a page action and a popup can use declarative content API
+to set rules in the background script for when the popup is available to users.
+When the conditions are met, the background script communicates with the popup to make it's icon clickable to users.
+
+CONTENT SCRIPT
+
+Extensions that read or write to web pages utiliza a content script.
+The content script contains Javascript that executes in the context of a page that has been loaded into the browser.
+Content scripts read and modify the DOM of web pages the browser visits.
+
+Content scripts can communicate with their parent extension by exchanging messages and storing values using the storage API.
+
+OPTIONS PAGE
+
+Just as extensions allow users to customize the Chrome browser, the options page enables customization pf the extension.
+Options can be used to enable features and allow users to choose what functionality is relevant to their needs.

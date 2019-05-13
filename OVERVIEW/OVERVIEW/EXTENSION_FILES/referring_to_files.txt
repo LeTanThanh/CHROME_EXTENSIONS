@@ -1,0 +1,19 @@
+REFERRING TO FILES
+
+An extension's files can be referred to by using a relative URL,
+just as file in an ordinary HTML page.
+<img src="images/my_image.png">
+
+Addtionally. each file can also be accesses using an absoluted URL.
+chrome-extension://<extensionID>/<pathToFile>
+
+In the absolute URL, the <extensionID> is a unique identifier that the extension system generates for each extension.
+The IDs for all loaded extensions can be view by going to the URL chrome://extensions.
+The <pathToFile> is the location of the file under the extension's top folder.
+It matches the relative URL.
+
+While working on an unpacked extension the extension ID can change.
+Speficifically, the ID of an unpacked extension will change of the extension is loaded from a different directory;
+the ID will change again when the extension is packaged.
+If the extension's core relies on an absoluted URL,
+it can use the chrome.runtime.getURL() method to avoid hardcoding the ID during development.

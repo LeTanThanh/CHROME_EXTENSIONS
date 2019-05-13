@@ -1,0 +1,27 @@
+EXTENSION FILES
+
+Extensions vary in types of files and amount of directories, but they are all require to have a manifest.
+Some basic, but useful, extension may consist of just the manifest and its toolbar icon.
+
+The manifest file, titled manifest.json, gives the browser information about the extension,
+such as most important files and capabilities the extension might use.
+{
+  "name": "My Extension",
+  "version": "2.1",
+  "description": "Gets information from Google",
+  "icons": {
+    "16": "icon_16.png",
+    "32": "icon_32.png",
+    "48": "icon_48.png",
+    "128": "icon_128.png"
+  },
+  "background": {
+    "scripts": ["background_script.js"],
+    "persistent": false
+  },
+  "permissions": ["https://*.google.com/", "activeTab"],
+  "browser_action": {
+    "default_icon": "icon_16.png",
+    "default_popup": "popup.html"
+  }
+}

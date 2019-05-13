@@ -1,0 +1,74 @@
+USING CHROME APIS
+
+In addtion to having access to the same APIs as web pages,
+extension can also use extension-specific APIs that create tight intergration with browser.
+Extensions and webpages can both access the standard window.open() method to open a URL,
+but extension can specify which window that URL should be display in by using the Chrome API tabs.create method instead.
+
+ASYNCHRONOUS vs SYNCHRONOUS METHODS
+
+Most Chrome API methods are asynchronous: they return immediately without waiting for the operation to finish.
+If an extension needs to know the outcome of anasynchronous operation it can pass a callback function into the method.
+The callback is executed later, potentially much later, after the method returns.
+
+If the extension needed to navigate the user's currently selected tab to a new URL,
+it would need to get the current tab's ID and then update that tab's address to the new URL.
+
+If the tabs.query method were synchronous. it may look something like below
+
+// THIS CODE DOESN'T WORK
+var tab = chrome.tabs.query({'active': true});
+chrome.tabs.update(tab.id, {url: newUrl});
+someOtherFunction();
+
+This approach will fail because query() is asynchronous.
+It returns without waiting for the work to complete, and does not return a value.
+A method is aynchronous when the callback parameter is available in its signature.
+
+// Signature for an asynchronous method
+chrome.tabs.query(obejct queryInfo, function callback);
+
+To correctly query a tab and update its URL the extension must ne callback parameter
+
+// THSI CODE WORKS
+chrome.tabs.query({'active': true}, function(tabs) {
+  chrome.tabs.update(tabs[0].id, {url: newUrl});
+});
+someOtherFunction();
+
+In the above code, the lines are executed in the following  order: 1, 4, 2.
+The callback function specified to query() is called and then executes line 2,
+but only after information about currently selected tab is available.
+This happend sometime after query() returns.
+Although update() is aysncfronous the code doesn't use a callback parameter,
+since the extension doesn't do anything with the results of the update
+
+// Synchronous methods have no callback option and returns a type of string
+string chrome.runtime.getURL();
+
+COMMUNICATE BETWEEN PAGES
+
+Different components in an extension often need to communicate with each other.
+Different HTML pages can find other by using chrome.extension methods, such as getViews(), and getBackgroundPage().
+Once a page has reference to other extension pages the first one can invoked functions on the other pages and manipulate their DOMs.
+Additionally, all components of the extension can access values stored using the stotage API and communicate through message passing.
+
+SAVING DATA AND INCOGNITO MODE
+
+Extensions can save data using the storage API, the HTML5 web storage API, or by making server requests that result in saving data.
+When the extension needs to save sonething, first consider if it's deom an incognito window,
+By default, extensions don't run in incognito windows.
+
+Incognito mode promies that the window will leave no tracks.
+When deadling with data from incognito window, extensions should honor this promise,
+If an extension normally saves browsing history, don't save history from incognito windows.
+However, extensions can store setting preferences from any window, igcognito or not.
+
+To detect whether a window is in incognito mode, check the incognito property of the relevant tabs.Tab or windows.Window object
+function saveTabData(tab) {
+  if (tab.incognito) {
+    return;
+  } else {
+    chrome.storage.set({data: tab.url});
+  }
+}

@@ -1,0 +1,10 @@
+OVERVIEW
+
+Extensions are zipped bundles of HTML, CSS, Javascript, images, and other files used in the web platform
+that customize the GoogleChrome browsing experience.
+Extensions are built using web technology and can use the same APIs the browser provides to the open web.
+
+Extensions have a wide range of functional possibilities.
+They can modify web content users see and interact with or extend and change the behavior of the browser itself.
+
+Consider extensions the gateway to making the Chrome browser the most personalized browser.
