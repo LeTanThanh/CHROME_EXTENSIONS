@@ -1,0 +1,142 @@
+MANAGE EVENTS WITH BACKGROUND SCRIPTS
+
+Extensions are event based programs used to modify or enhance the Chrome browsing experience.
+Events are browser triggers, such as
+- navigating to a new page
+- removing a bookmark
+- closing a tab.
+Extensions monitor these events in their background script,
+then react with specified instructions.
+
+A background page is loaded it is needed, and unloaded when it goes idle.
+Some examples of events are include:
+- The extension is first installed or updated to a new version.
+- The background page was listening for an event, and the event is dispatched.
+- A content script or other extension sends a message.
+- Another view in the extension, such as popup calls runtime.getBackgroundPage.
+
+Once it has been loaded, a background page will stay running as long as it is performing an action,
+such as calling a Chrome API or issuing a network request.
+Addtionally, the background page will not unload until all visible views and all message ports are closed.
+Note that opening a view does not cause the event page to load, but only prevents it from closing once loaded.
+
+Effective background scripts stay dormant until an event they are listening for fires, react with specified instructions then unload.
+
+REGISTER BACKGROUND SCRIPTS
+
+Background scripts are registered in the manifest under the "background" field.
+They are listed in an array after the "scripts" key, and "persistent" should be soecified as false.
+{
+  "name": "Awesome Test Extension",
+  ...
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  ...
+}
+
+Multiple background scripts can be registered for modularized code.
+{
+  "name": "Awesome Test Extension",
+  ...
+  "background": {
+    "scripts": [
+      "backgroundContextMenu.js",
+      "backgroundOmnibox.js",
+      "backgroundOauth.js"
+    ],
+    "persistent": false
+  },
+  ...
+}
+
+INITIALIZE THE EXTENSION
+
+Listen to the runtime.onInstalled event to initialize an extension on installation.
+Use this event to set a state or for one-time initialization, such as a context menu.
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.contextMenus.create({
+    "id": "sampleContextMenu",
+    "title": "Sample Context Menu",
+    "contexts": ["selection"]
+  });
+});
+
+SET UP LISTENER
+
+Structure background scripts around events the extension depends on.
+Defining functionally relavants events allows background scripts to lie dormant
+until those events are fired and prevents the extension from missing important triggers.
+
+Listeners must be registered synchronously from the start of the page.
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.contextMenus.create({
+    "id": "sampleContentMenu",
+    "title": "Sample Context Menu",
+    "contexts": ["selection"]
+  });
+});
+
+chrome.bookmarks.onCreated.addListener(function() {
+
+});
+
+Extensions can remove listeners from their background scripts by calling removeListener.
+If all listeners for an event are removed, Chrome will no longer load the extension's background script for that event.
+
+chrome.runtime.onMessage.addListener(function(message, sender, reply) {
+  chrome.runtime.onMessage.removeListener(event);
+});
+
+FILTER events
+
+Use APIs that support event filters to restrict listeners to the cases the extension care about.
+If an extension is listening for the tabs.onUpdated event, 
+try using the webNavigation.onCompleted wvent with filters instead, as the tabs API does not support filters.
+
+chrome.webNavigation.onCompleted.addListener(function() {
+  alert('This is my favorite website!');
+}, {url: [{urlMatches: 'https://www.google.com/'}]});
+
+REACT TO LISTENERS
+
+Listeners exist to trigger functionality once and event has fired.
+To react to an event, structure the desired reaction inside of the listener event.
+
+chrome.runtime.onMessage.addListener(function(message, callback) {
+  if (message.data ==  'setAlarm') {
+    chrome.alarms.create({delayInMinutes: 5})
+  } else if (message.data == 'runLogic') {
+    chrome.tabs.executeScript({file: 'logic.js'})
+  } else if (message.data == 'changeColor') {
+    chrome.tabs.executeScript(
+      {code: 'document.body.style.backgroundColor = "orange"; '}
+    )
+  }
+});
+
+UNLOAD BACKGROUND SCRIPTS
+
+Data should be persisted periodically so that important information is not lost if extension crash without receiving onSuspend,
+Use the storage API to assist with this.
+
+chrome.storage.local.set({variable: variableInformation});
+
+If an extension uses message passing , ensure all ports are cloded.
+The background script will not unload until all message ports heve shut.
+Listening to the runtime.Port.onDisconnect event will give insight to when open ports are closing.
+Manually close then with runtime,Port.disconnect.
+
+chrome.runtime.onMessage.addListener(function(message, callback) {
+  if (message == 'hello') {
+    sendResponse({greeting: 'welcome!'})
+  } else if (message == 'goodbye') {
+    chrome.runtime.Port.disconnect();
+  }
+});
+
+The lifetime of a background script is observable by minitoring
+when an entry for the extension appears and disappears from Chrome's task manager.
