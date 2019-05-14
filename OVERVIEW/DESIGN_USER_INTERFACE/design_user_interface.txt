@@ -1,0 +1,7 @@
+DESIGN USER INTERFACE
+
+The extension user interface should be purposeful and minimal just like extension themself
+the UI shoukd customize or enhance the browsing experience without distracting from it.
+
+This guide explores required and optional user interface.
+Use it to understand how and when to implement different UI elements within an extension.

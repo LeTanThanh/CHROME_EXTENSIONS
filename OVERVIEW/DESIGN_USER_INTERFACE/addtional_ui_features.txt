@@ -1,0 +1,153 @@
+ADDTIONAL UI FEATURES
+
+POPUP
+
+A popup is an HTML files that is displayed in a special window when the user clocks the toolbar icon.
+A popup works very similarly to a webpage, it can contain links to stylesheets and script tags
+but does not sllow inline Javascript.
+
+The Drink Water Event example popup displays available timer options.
+Users set an alarm by clicking one of the provided buttons.
+
+<html>
+  <head>
+    <title>Water Popup</title>
+  </head>
+
+  <body>
+    <img src="./stay_hydrated.png" id="hydrateImage">
+    
+    <buton id="sampleSecond" value="0.1">Sample Second</button>
+    <buton id="15min" value="15">15 min</button>
+    <buton id="30min" value="30">30 min</button>
+    <buton id="cancelAlarm">Cancel Alarm</button>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
+
+TOOLTIP
+
+Use a tooltip to give short descriptions or instructions to users when hovering over the browser icon.
+
+Tooltips are registered in the "default_title" field "browser_action" and "page_action" in the manifest.
+
+{
+  "name": "Tab Flipper",
+  ...
+  "browser_action": {
+    "default_title": "Press Ctrl(Win)/Command(Mac) + Shift + Right/Left to flip tabs"
+  },
+  ...
+}
+
+Tooltips can also be set or updated by calling browserAction.setTitle and pageAction.setTitle
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+  chrome.browserAction.setTitle({tabId: tab.id, title: "You are on tab: " + tab.id});
+});
+
+Specialized locale strings are implemented with I18n. 
+Create directories to house language specific messages within a folder called _locales.
+The following images shows a file path for an extension that support ENglish and Spanish locales.
+
+_localss/en/messages.json
+_locales/es/messages.json
+
+Format messages inside of each language's messages.json
+
+{
+  "__MSG_tooltip__": {
+    "message": "Hello !",
+    "description": "Tooltip Greeting."
+  }
+}
+
+Include the name of the message in the tooltip field instead of the message to eanble localization.
+
+{
+  "name": "Tab Flipper",
+  ...
+  "browser_action": {
+    "default_title": "___MSG_tooltip__"
+  }
+}
+
+OMNIBOX
+
+Users can invoked extensions functionality through the omnibox.
+Include the "omnibox" field in the manifest and designaed a keyword.
+The Omnibox New tab Search sample extension uses "nt" as the keyword.
+
+{
+  "name": "Omnibox New Tab Search",
+  ...
+  "omnibox": {"keyword": "nt"},
+  "default_icon": {
+    "16": "newtab_search16.png",
+    "32": "newtab_search32.png"
+  }
+  ...
+}
+
+When the user types "nt" into the omnibox, it activates the extension.
+To signal this to the user, it greyscales the provided 16x16 icon and includes it in on omnibox next to the extension name.
+
+The extension listens to the omnibox.onInputEntered event.
+After it's triggered, the extension opens a new tab containing a Google Search for the user's entry.
+
+chrome.omnibox.onInputEntered.addListener(function(text) {
+  // Encode user input fpr specific characters, / ? : @ & = + $ #
+  var newURL = 'https://www.google.com/search?q=' + encodeURIComponent(text);
+  chrome.tabs.create({url: newURL});
+});
+
+CONTEXT MENU
+
+Add new context menu options by granting the "contextMenus" permission in the manifest.
+
+{
+  "name": "Global Google Search",
+  ...
+  "permissions": ["contextMenus", "storage"],
+  "icons": {
+    "16": "globalGoogle16.png",
+    "48": "globalGoogle48.png",
+    "128": "globalGoogle128.png"
+  },
+  ...
+}
+
+The 16x16 icon is displayed next to the new menu entry
+
+Create a context menu by calling contextMenus.create in the background script.
+This should be under runtime.onOnstalled listener event.
+
+chrome.runtime.onInstalled.addListener(function() {
+  for (let key of Object.keys(kLocals)) {
+    chrome.contextMenus.create({
+      id: key,
+      title: 'kLocals[key],
+      type: 'normal',
+      contexts: ['selection']    
+    });
+  }
+});
+
+const kLocales = {
+  'com.au': 'Australia',
+  'com.br': 'Brazil',
+  'ca': 'Canada',
+  'cn': 'China',
+  'fr': 'France',
+  'it': 'Italy',
+  'co.in': 'India',
+  'co.jp': 'Japan',
+  'com.ms': 'Mexico',
+  'ru': 'Russia',
+  'co.za': 'South Africa',
+  'co.uk': 'United Kingdom'
+};
+
+The Global Google Search context menu example creates multiple options from the list in lacales.js.
+When an extension contains more than one context menu, Google Chrome automatically collapses them into a single parent menu.

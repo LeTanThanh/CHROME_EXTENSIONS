@@ -1,0 +1,33 @@
+ACTIVE THE EXTENSION ON ALL PAGES
+
+Use a "browser_action" when an extension's feature are functional in most situations.
+
+REGISTER BROWSER ACTION
+
+The "browser_action" field is registered in the manifest.
+
+{
+  "name": "My Awesome browser_action Extension",
+  ...
+  "browser_action": {
+
+  },
+  ...
+}
+
+Declaring "browser_action" keeps the icon colorized, indicating the extension is available to users.
+
+ADD A BADGE
+
+Badges display a colored banner with up to four characters on top the browser icon.
+They can only be used by extensions that declare "browser_action" in their manifest.
+
+Use badges to indicate the state of your extension.
+The Drine Water Event sample displays a badge with "ON" to show the user they successfully set an alarm
+and displays nothing when the extension is idle.
+
+Set the text of the badge by calling chrome.browserAction.setBadgeText
+and the banner color by calling chrome.browserAction.setBadge.BackgroundColor
+
+chrome.browserAction.setBadgeText({text: 'ON'});
+chrome.browserAction.setBadgeBackgroundColor({color: '#4688F1'});
